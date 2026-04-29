@@ -1,0 +1,400 @@
+basePath: /api
+definitions:
+  http.AddVehicleRequest:
+    properties:
+      gov_number:
+        type: string
+      mileage:
+        type: integer
+      vehicle_type_id:
+        type: string
+      vin:
+        type: string
+    type: object
+  http.AddVehicleResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  http.CreateCustomerRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  http.CustomerListItemDTO:
+    properties:
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+      vehicles:
+        items:
+          $ref: '#/definitions/http.CustomerVehicleDTO'
+        type: array
+    type: object
+  http.CustomerVehicleDTO:
+    properties:
+      gov_number:
+        type: string
+      id:
+        type: string
+      mileage:
+        type: integer
+      vehicle_type_id:
+        type: string
+      vin:
+        type: string
+    type: object
+  http.GetCustomerResponse:
+    properties:
+      customer:
+        $ref: '#/definitions/http.CustomerListItemDTO'
+      vehicles:
+        items:
+          $ref: '#/definitions/http.CustomerVehicleDTO'
+        type: array
+    type: object
+  http.ListCustomersResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/http.CustomerListItemDTO'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      q:
+        type: string
+    type: object
+  http.ListVehicleTypesResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/http.VehicleTypeResponse'
+        type: array
+    type: object
+  http.UpdateCustomerRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  http.UpdateVehicleRequest:
+    properties:
+      gov_number:
+        type: string
+      mileage:
+        type: integer
+      vin:
+        type: string
+    type: object
+  http.VehicleTypeResponse:
+    properties:
+      brand:
+        type: string
+      id:
+        type: string
+      model:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Autofort backend API
+  title: Autofort API
+  version: "1.0"
+paths:
+  /customers:
+    get:
+      description: Search by q (name/lastname/phone). Includes vehicles.
+      parameters:
+      - description: Search by first name, last name, phone
+        in: query
+        name: q
+        type: string
+      - description: Limit (default 20)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ListCustomersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List customers
+      tags:
+      - customers
+    post:
+      consumes:
+      - application/json
+      description: Create a new customer with first name, last name and phone number
+      parameters:
+      - description: Customer payload
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: created customer id
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: validation or bad request error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create customer
+      tags:
+      - customers
+  /customers/{id}:
+    get:
+      description: Returns a customer by id with vehicles.
+      parameters:
+      - description: Customer ID (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.GetCustomerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get customer
+      tags:
+      - customers
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates customer fields by id.
+      parameters:
+      - description: Customer ID (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update customer
+      tags:
+      - customers
+  /customers/{id}/vehicles:
+    post:
+      consumes:
+      - application/json
+      description: Creates a vehicle for a specific customer (customer id comes from
+        path).
+      parameters:
+      - description: Customer ID (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Vehicle payload
+        in: body
+        name: vehicle
+        required: true
+        schema:
+          $ref: '#/definitions/http.AddVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/http.AddVehicleResponse'
+        "400":
+          description: bad request / validation
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: customer or vehicle type not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: internal error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add vehicle to customer
+      tags:
+      - vehicles
+  /vehicle-types:
+    get:
+      consumes:
+      - application/json
+      description: Returns vehicle types (brand + model) for dropdowns.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ListVehicleTypesResponse'
+        "500":
+          description: internal error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List vehicle types
+      tags:
+      - vehicle-types
+  /vehicles/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates vehicle fields by id.
+      parameters:
+      - description: Vehicle ID (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update vehicle
+      tags:
+      - vehicles
+  /vehicles/{id}/work-order:
+    get:
+      description: Generates (via create-list-service) and downloads a PDF work order
+        for a vehicle.
+      parameters:
+      - description: Vehicle ID (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Download work order PDF
+      tags:
+      - work-orders
+swagger: "2.0"

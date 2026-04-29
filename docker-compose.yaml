@@ -1,0 +1,57 @@
+services:
+
+  web:
+    image: salo1278/autofort-web:1.0.0
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    
+  backend:
+    image: salo1278/autofort-backend:1.0.0
+    build:
+      context: ./backend/go-app
+      dockerfile: ./deploy/Dockerfile
+    env_file:
+      - ./backend/go-app/deploy/.env
+    environment:
+      - APP_ENV=PROD
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+  
+  worker-order:
+    image: salo1278/autofort-worker-order:1.0.0
+    build:
+      context: ./backend/worker-order
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./backend/go-app/deploy/.env
+    command: >
+      uvicorn main:app
+      --port ${WORK_ORDER_PORT_PROD}
+      --host ${WORK_ORDER_HOST_PROD}
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+
+volumes:
+  pgdata:

@@ -1,0 +1,609 @@
+{
+    "schemes": [],
+    "swagger": "2.0",
+    "info": {
+        "description": "Autofort backend API",
+        "title": "Autofort API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "",
+    "basePath": "/api",
+    "paths": {
+        "/customers": {
+            "get": {
+                "description": "Search by q (name/lastname/phone). Includes vehicles.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "List customers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search by first name, last name, phone",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit (default 20)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset (default 0)",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.ListCustomersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new customer with first name, last name and phone number",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Create customer",
+                "parameters": [
+                    {
+                        "description": "Customer payload",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.CreateCustomerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "created customer id",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "validation or bad request error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/customers/{id}": {
+            "get": {
+                "description": "Returns a customer by id with vehicles.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Get customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer ID (uuid)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.GetCustomerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Partially updates customer fields by id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Update customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer ID (uuid)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Fields to update",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UpdateCustomerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/customers/{id}/vehicles": {
+            "post": {
+                "description": "Creates a vehicle for a specific customer (customer id comes from path).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "Add vehicle to customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer ID (uuid)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Vehicle payload",
+                        "name": "vehicle",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.AddVehicleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/http.AddVehicleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request / validation",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "customer or vehicle type not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicle-types": {
+            "get": {
+                "description": "Returns vehicle types (brand + model) for dropdowns.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicle-types"
+                ],
+                "summary": "List vehicle types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.ListVehicleTypesResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicles/{id}": {
+            "patch": {
+                "description": "Partially updates vehicle fields by id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "Update vehicle",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vehicle ID (uuid)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Fields to update",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UpdateVehicleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicles/{id}/work-order": {
+            "get": {
+                "description": "Generates (via create-list-service) and downloads a PDF work order for a vehicle.",
+                "produces": [
+                    "application/pdf"
+                ],
+                "tags": [
+                    "work-orders"
+                ],
+                "summary": "Download work order PDF",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vehicle ID (uuid)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "http.AddVehicleRequest": {
+            "type": "object",
+            "properties": {
+                "gov_number": {
+                    "type": "string"
+                },
+                "mileage": {
+                    "type": "integer"
+                },
+                "vehicle_type_id": {
+                    "type": "string"
+                },
+                "vin": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.AddVehicleResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.CreateCustomerRequest": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.CustomerListItemDTO": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "vehicles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/http.CustomerVehicleDTO"
+                    }
+                }
+            }
+        },
+        "http.CustomerVehicleDTO": {
+            "type": "object",
+            "properties": {
+                "gov_number": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mileage": {
+                    "type": "integer"
+                },
+                "vehicle_type_id": {
+                    "type": "string"
+                },
+                "vin": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.GetCustomerResponse": {
+            "type": "object",
+            "properties": {
+                "customer": {
+                    "$ref": "#/definitions/http.CustomerListItemDTO"
+                },
+                "vehicles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/http.CustomerVehicleDTO"
+                    }
+                }
+            }
+        },
+        "http.ListCustomersResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/http.CustomerListItemDTO"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "q": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.ListVehicleTypesResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/http.VehicleTypeResponse"
+                    }
+                }
+            }
+        },
+        "http.UpdateCustomerRequest": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.UpdateVehicleRequest": {
+            "type": "object",
+            "properties": {
+                "gov_number": {
+                    "type": "string"
+                },
+                "mileage": {
+                    "type": "integer"
+                },
+                "vin": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.VehicleTypeResponse": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

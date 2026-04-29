@@ -1,0 +1,32 @@
+<template>
+  <div class="app-layout">
+    <!-- sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Menu</div>
+
+      <nav class="sidebar-nav">
+        <NuxtLink to="/" class="sidebar-link">Home</NuxtLink>
+        <NuxtLink to="/customers" class="sidebar-link">Customers</NuxtLink>
+      </nav>
+    </aside>
+
+    <!-- main + footer -->
+    <div class="app-right">
+      <main class="app-main">
+        <div class="container">
+          <slot />
+        </div>
+      </main>
+
+      <!-- footer -->
+      <footer class="footer">
+        <span class="muted">
+          © 2026 · made by
+          <a href="https://t.me/iva0520" target="_blank" rel="noopener">
+            @iva0520
+          </a>
+        </span>
+      </footer>
+    </div>
+  </div>
+</template>
