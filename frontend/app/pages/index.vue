@@ -64,15 +64,15 @@ watch(q, (val) => {
     return
   }
 
-  // чтобы не искать по 1 символу (можно убрать если хочешь)
-  if (val.length < 2) {
-    if (timer) clearTimeout(timer)
-    items.value = []
-    pending.value = false
-    error.value = ""
-    searched.value = false
-    return
-  }
+  // чтобы не искать по 1 символу
+  // if (val.length < 2) {
+  //   if (timer) clearTimeout(timer)
+  //   items.value = []
+  //   pending.value = false
+  //   error.value = ""
+  //   searched.value = false
+  //   return
+  // }
 
   // debounce 300ms
   if (timer) clearTimeout(timer)

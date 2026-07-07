@@ -19,6 +19,7 @@ func Route(app *fiber.App, handler *http.Handler) {
 		},
 	}))
 
+	// api.Post("/signin", handler.SignIn) нет пока ручки, может не надо будет
 	api.Post("/customers", handler.CreateCustomerHandle)
 	api.Post("/customers/:id/vehicles", handler.AddVehicleToCustomerHandle)
 	api.Get("/customers", handler.ListCustomersHandle)

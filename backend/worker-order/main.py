@@ -40,7 +40,7 @@ async def work_order_pdf(request: Request) -> Response:
         # чтобы Go-клиент получил диагностируемую ошибку (он читает тело)
         return Response(content=f"pdf generation error: {e}", status_code=500, media_type="text/plain")
 
-    # Важно: Content-Type ровно application/pdf, чтобы твоя проверка проходила
+    # Важно: Content-Type ровно application/pdf
     return Response(
         content=pdf_bytes,
         status_code=200,

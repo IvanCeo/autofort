@@ -1,20 +1,20 @@
 <template>
   <div>
     <div class="row">
-      <h1 style="margin: 0;">Customers</h1>
+      <h1 style="margin: 0;">Клиенты</h1>
       <NuxtLink to="/customers/new">
-        <button class="btn">Create customer</button>
+        <button class="btn">Добавить клиента</button>
       </NuxtLink>
     </div>
 
-    <div v-if="pending" class="muted" style="margin-top: 12px;">Loading...</div>
+    <div v-if="pending" class="muted" style="margin-top: 12px;">Загрузка...</div>
     <div v-else-if="error" class="muted" style="margin-top: 12px;">
-      Error: {{ error.message }}
+      Ошибка: {{ error.message }}
     </div>
 
     <div v-else style="margin-top: 12px;">
       <div v-if="typesPending" class="muted" style="margin-bottom: 8px;">
-        Loading vehicle types...
+        Загрузка машин...
       </div>
       <div v-else-if="typesError" class="muted" style="margin-bottom: 8px;">
         Vehicle types error: {{ typesError.message }}
@@ -30,7 +30,7 @@
       </div>
 
       <div v-else class="muted">
-        No customers
+        Здесь пока пусто :(
       </div>
     </div>
   </div>

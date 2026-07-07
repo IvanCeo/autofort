@@ -2,11 +2,11 @@
   <div class="app-layout">
     <!-- sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-title">Menu</div>
+      <div class="sidebar-title">Меню</div>
 
       <nav class="sidebar-nav">
-        <NuxtLink to="/" class="sidebar-link">Home</NuxtLink>
-        <NuxtLink to="/customers" class="sidebar-link">Customers</NuxtLink>
+        <NuxtLink to="/" class="sidebar-link">Домашняя</NuxtLink>
+        <NuxtLink to="/customers" class="sidebar-link">Клиенты</NuxtLink>
       </nav>
     </aside>
 
