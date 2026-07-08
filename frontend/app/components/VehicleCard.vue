@@ -3,20 +3,20 @@
     <!-- VIEW MODE -->
     <div v-if="!isEditing">
       <div class="row">
-        <div>
+        <!-- <div> -->
           <div class="card-title">
             <!-- Brand + Model -->
             {{ vehicleTypeTitle }}
           </div>
           <div class="muted">
-            Plate: {{ vehicle.gov_number || "—" }}
+            Гос. номер: {{ vehicle.gov_number || "—" }}
           </div>
-        </div>
+        <!-- </div> -->
 
         <div class="card-actions">
-          <button class="btn" @click="startEdit">Edit</button>
+          <button class="btn" @click="startEdit">Изменить авто</button>
           <button class="btn" @click="print" :disabled="printing">
-            {{ printing ? "Printing..." : "Print" }}
+            {{ printing ? "Печатаем..." : "Распечатать обходник" }}
           </button>
         </div>
       </div>
@@ -25,7 +25,7 @@
         <div class="key">VIN</div>
         <div>{{ vehicle.vin || "-" }}</div>
 
-        <div class="key">Mileage</div>
+        <div class="key">Пробег</div>
         <div>{{ vehicle.mileage ?? "-" }}</div>
       </div>
 
@@ -41,22 +41,22 @@
       </div>
 
       <div class="kv" style="margin-top:8px;">
-        <div class="key">Gov number</div>
+        <div class="key">Гос. номер</div>
         <input class="input" v-model="form.gov_number" />
 
         <div class="key">VIN</div>
         <input class="input" v-model="form.vin" />
 
-        <div class="key">Mileage</div>
+        <div class="key">Пробег</div>
         <input class="input" v-model="form.mileage" />
       </div>
 
       <div class="card-actions" style="margin-top:10px;">
         <button class="btn" @click="save" :disabled="saving">
-          {{ saving ? "Saving..." : "Save" }}
+          {{ saving ? "Сохранение..." : "Сохранить" }}
         </button>
         <button class="btn" @click="cancel" :disabled="saving">
-          Cancel
+          Отмена
         </button>
       </div>
 

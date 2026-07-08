@@ -1,8 +1,8 @@
 <template>
   <div>
-    <NuxtLink to="/">← Back</NuxtLink>
+    <NuxtLink to="/">← Назад</NuxtLink>
 
-    <h1>Create customer</h1>
+    <h1>Добавить клиента</h1>
 
     <div v-if="error" class="muted" style="white-space: pre-wrap; margin-top: 8px;">
       Error: {{ error }}
@@ -10,24 +10,24 @@
 
     <div class="card" style="margin-top: 12px;">
       <div class="kv">
-        <div class="key">First name</div>
+        <div class="key">Имя</div>
         <input class="input" v-model="form.first_name" />
 
-        <div class="key">Last name</div>
+        <div class="key">Фамилия</div>
         <input class="input" v-model="form.last_name" />
 
-        <div class="key">Phone</div>
+        <div class="key">Телефон</div>
         <PhoneInput v-model="form.phone_number" />
       </div>
 
       <div class="card-actions" style="margin-top: 10px;">
         <button class="btn" @click="create" :disabled="pending || !canCreate">
-          {{ pending ? "Creating..." : "Create" }}
+          {{ pending ? "Добаление..." : "Добавить" }}
         </button>
 
-        <div v-if="!canCreate" class="muted" style="margin-top: 8px;">
-          Enter full phone number
-        </div>
+        <!-- <div v-if="!canCreate" class="muted" style="margin-top: 8px;">
+          Введите полный номер телефона
+        </div> -->
       </div>
     </div>
   </div>

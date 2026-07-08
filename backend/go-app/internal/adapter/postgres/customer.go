@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	e "autofort/internal/errors"
 	"errors"
 	"strings"
 
@@ -30,7 +31,7 @@ func (p *Postgres) GetCustomer(id uuid.UUID) (*entity.Customer, error) {
 	var c entity.Customer
 	if err := row.Scan(&c.ID, &c.FirstName, &c.LastName, &c.PhoneNumber); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errors.New("customer not found")
+			return nil, e.ErrNoCustomer
 		}
 		return nil, err
 	}
@@ -51,7 +52,7 @@ func (p *Postgres) UpdateCustomer(c *entity.Customer) error {
 		return err
 	}
 	if ct.RowsAffected() == 0 {
-		return errors.New("customer not found")
+		return e.ErrNoCustomer
 	}
 	return nil
 }

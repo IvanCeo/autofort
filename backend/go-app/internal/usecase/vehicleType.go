@@ -57,3 +57,7 @@ func (s *Server) AddVehicleType(brand, model string) (uuid.UUID, error) {
 func (s *Server) ListVehicleTypes() ([]*entity.VehicleType, error) {
 	return s.VehicleTypeRepo.ListVehicleTypes()
 }
+
+func (s *Server) GetVehicleTypeByID(id uuid.UUID) (*entity.VehicleType, error) {
+	return s.VehicleTypeRepo.GetVehicleTypeByID(id)
+}

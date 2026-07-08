@@ -1,9 +1,9 @@
 package postgres
 
 import (
-	"errors"
-
 	"autofort/internal/entity"
+	e "autofort/internal/errors"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -51,7 +51,7 @@ func (p *Postgres) GetVehicleTypeByID(id uuid.UUID) (*entity.VehicleType, error)
 	vt := new(entity.VehicleType)
 	if err := row.Scan(&vt.ID, &vt.Brand, &vt.Model); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errors.New("vehicle type not found")
+			return nil, e.ErrNoVehicleType
 		}
 		return nil, err
 	}

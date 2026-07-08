@@ -1,16 +1,16 @@
 <template>
   <div>
     <div class="row">
-      <NuxtLink to="/customers">← Back to customers</NuxtLink>
+      <NuxtLink to="/customers">← Назад</NuxtLink>
 
-      <button class="btn" @click="openAddVehicle" :disabled="pending">
-        Add vehicle
-      </button>
+      <!-- <button class="btn" @click="openAddVehicle" :disabled="pending">
+        Добавить авто
+      </button> -->
     </div>
 
-    <h1>Customer</h1>
+    <h1>Клиент</h1>
 
-    <div v-if="pending" class="muted" style="margin-top:12px;">Loading...</div>
+    <div v-if="pending" class="muted" style="margin-top:12px;">Загрузка...</div>
     <div v-else-if="error" class="muted" style="margin-top:12px;">
       Error: {{ error.message }}
     </div>
@@ -18,38 +18,41 @@
     <div v-else>
       <!-- CUSTOMER CARD -->
       <div class="card">
-        <div class="row">
-          <div>
+        <div class="row" style="flex-direction: column;">
+          <!-- <div> -->
             <div class="card-title">
               {{ customerData.first_name }} {{ customerData.last_name }}
             </div>
             <div class="muted">{{ customerData.phone_number }}</div>
-          </div>
+          <!-- </div> -->
 
           <button class="btn" @click="startEdit" v-if="!isEditing">
-            Edit
+            Изменить данные
           </button>
+          <button class="btn" @click="openAddVehicle" :disabled="pending">
+            Добавить авто
+          </button> 
         </div>
 
         <!-- EDIT CUSTOMER -->
         <div v-if="isEditing" style="margin-top: 12px;">
           <div class="kv">
-            <div class="key">First name</div>
+            <div class="key">Имя</div>
             <input class="input" v-model="form.first_name" />
 
-            <div class="key">Last name</div>
+            <div class="key">Фамилия</div>
             <input class="input" v-model="form.last_name" />
 
-            <div class="key">Phone</div>
+            <div class="key">Телефон</div>
             <PhoneInput v-model="form.phone_number" />
           </div>
 
           <div class="card-actions" style="margin-top:10px;">
             <button class="btn" @click="saveCustomer" :disabled="saving">
-              {{ saving ? "Saving..." : "Save" }}
+              {{ saving ? "Сохранение..." : "Сохранить" }}
             </button>
             <button class="btn" @click="cancelEdit" :disabled="saving">
-              Cancel
+              Отмена
             </button>
           </div>
 
@@ -62,22 +65,22 @@
       <!-- ADD VEHICLE FORM -->
       <div v-if="addingVehicle" class="card">
         <div class="row">
-          <b>Add vehicle</b>
+          <b>Добавить авто</b>
           <button class="btn" @click="closeAddVehicle" :disabled="vehicleSaving">
-            Close
+            Отмена
           </button>
         </div>
 
         <div class="kv" style="margin-top: 8px;">
-          <div class="key">Gov number</div>
+          <div class="key">Гос. номер</div>
           <input class="input" v-model="vehicleForm.gov_number" />
 
           <div class="key">VIN</div>
           <input class="input" v-model="vehicleForm.vin" />
 
-          <div class="key">Vehicle type</div>
+          <div class="key">Тип авто</div>
           <select class="input" v-model="vehicleForm.vehicle_type_id">
-            <option value="">-- select --</option>
+            <option value="">-- Выбрать --</option>
             <option
               v-for="t in (vehicleTypes?.items || [])"
               :key="t.id"
@@ -87,12 +90,12 @@
             </option>
           </select>
 
-          <div class="key">Mileage</div>
+          <div class="key">Пробег</div>
           <input class="input" v-model="vehicleForm.mileage" />
         </div>
 
         <div v-if="typesPending" class="muted" style="margin-top:8px;">
-          Loading vehicle types...
+          Загрузка машин...
         </div>
         <div v-else-if="typesError" class="muted" style="margin-top:8px;">
           Vehicle types error: {{ typesError.message }}
@@ -100,7 +103,7 @@
 
         <div class="card-actions" style="margin-top:10px;">
           <button class="btn" @click="createVehicle" :disabled="vehicleSaving">
-            {{ vehicleSaving ? "Creating..." : "Create vehicle" }}
+            {{ vehicleSaving ? "Добавление..." : "Добавить" }}
           </button>
         </div>
 
@@ -111,7 +114,7 @@
 
       <!-- VEHICLES -->
       <div v-if="vehicles.length">
-        <h2>Vehicles</h2>
+        <h2>Машины</h2>
 
         <VehicleCard
           v-for="v in vehicles"
@@ -124,7 +127,7 @@
       </div>
 
       <div v-else class="muted">
-        No vehicles yet
+        Пока нет машин
       </div>
     </div>
   </div>

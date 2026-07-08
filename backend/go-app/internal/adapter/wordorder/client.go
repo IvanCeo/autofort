@@ -50,18 +50,14 @@ func NewWorkOrderClient(ctx context.Context, timeout time.Duration) (*WorkOrderC
 }
 
 func (c *WorkOrderClient) CreateWorkOrderPDF(req *usecase.WorkOrderCreateRequest) (*usecase.WorkOrderCreateResponse, error) {
-	// Лучше принимать ctx от usecase/handler, но пока держим просто Background.
-	// Если захочешь — я покажу, как протянуть ctx через слои.
 	ctx, cancel := context.WithTimeout(context.Background(), c.http.Timeout)
 	defer cancel()
 
-	// 1) JSON encode
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(req); err != nil {
 		return &usecase.WorkOrderCreateResponse{}, err
 	}
 
-	// 2) HTTP request
 	url := c.baseURL + "/work-order/pdf"
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, &buf)
@@ -71,16 +67,13 @@ func (c *WorkOrderClient) CreateWorkOrderPDF(req *usecase.WorkOrderCreateRequest
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/pdf")
 
-	// 3) Do
 	resp, err := c.http.Do(httpReq)
 	if err != nil {
 		return &usecase.WorkOrderCreateResponse{}, err
 	}
 	defer resp.Body.Close()
 
-	// 4) status handling
 	if resp.StatusCode != http.StatusOK {
-		// читаем кусочек тела, чтобы видеть ошибку сервиса (и логировать)
 		b, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
 		if len(b) == 0 {
 			return &usecase.WorkOrderCreateResponse{}, fmt.Errorf("work-order service returned %d", resp.StatusCode)
@@ -88,7 +81,6 @@ func (c *WorkOrderClient) CreateWorkOrderPDF(req *usecase.WorkOrderCreateRequest
 		return &usecase.WorkOrderCreateResponse{}, fmt.Errorf("work-order service returned %d: %s", resp.StatusCode, string(b))
 	}
 
-	// 5) content-type check (мягкий)
 	ct := resp.Header.Get("Content-Type")
 	if ct == "" {
 		// бывает, сервис не ставит — не валим

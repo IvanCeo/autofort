@@ -9,10 +9,10 @@
     </div>
 
     <div class="card" style="margin-top: 12px;">
-      <div class="card-title">Поиск клиента</div>
+      <!-- <div class="card-title">Поиск клиента</div> -->
 
-      <div style="margin-top: 8px;">
-        <input class="input" v-model="q" placeholder="имя / фамилия / телефон" />
+      <div style="margin-top: 2px;">
+        <input class="input" v-model="q" placeholder=" имя / фамилия / телефон" />
       </div>
 
       <div v-if="pending" class="muted" style="margin-top:8px;">
@@ -27,14 +27,14 @@
         Не найдено
       </div>
 
-      <div v-else-if="!q" class="muted" style="margin-top:8px;">
+      <!-- <div v-else-if="!q" class="muted" style="margin-top:8px;">
         пиши чтобы искать...
-      </div>
+      </div> -->
     </div>
 
     <div v-if="q && items.length" style="margin-top: 12px;">
       <div class="muted" style="margin-bottom: 8px;">
-        Results: {{ items.length }}
+        Результаты: {{ items.length }}
       </div>
 
       <CustomerCard v-for="c in items" :key="c.id" :customer="c" />

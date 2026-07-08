@@ -28,5 +28,9 @@ func Route(app *fiber.App, handler *http.Handler) {
 	api.Get("/vehicle-types", handler.GetVehicleTypesHandle)
 	api.Patch("/vehicles/:id", handler.PatchVehicleHandle)
 
+	// TODO:
+	// /vehicle-types/:id
+	// /customers/:id/vehicles - DELETE
+
 	api.Get("/vehicles/:id/work-order", handler.DownloadWorkOrderHandle)
 }

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"autofort/internal/entity"
+	e "autofort/internal/errors"
 	"errors"
 	"fmt"
 	"strings"
@@ -104,7 +105,7 @@ func (p *Postgres) GetVehicle(id uuid.UUID) (*entity.Vehicle, error) {
 		&v.Mileage,
 	); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errors.New("vehicle not found")
+			return nil, e.ErrNoVehicle
 		}
 		return nil, err
 	}
@@ -128,7 +129,7 @@ func (p *Postgres) UpdateVehicle(v *entity.Vehicle) error {
 	}
 
 	if ct.RowsAffected() == 0 {
-		return errors.New("vehicle not found")
+		return e.ErrNoVehicle
 	}
 
 	return nil

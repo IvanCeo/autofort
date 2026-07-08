@@ -1,9 +1,11 @@
 package http
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type VehicleTypeResponse struct {
@@ -45,4 +47,30 @@ func (h *Handler) GetVehicleTypesHandle(c *fiber.Ctx) error {
 	}
 
 	return c.Status(200).JSON(resp)
+}
+
+func (h *Handler) GetVehicleTypeByIDHandle(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		return c.Status(400).SendString(`{"error": "invalid vehicle id"}`)
+	}
+
+	vp, err := h.server.GetVehicleTypeByID(id)
+	if err != nil {
+		return c.Status(500).SendString(fmt.Sprintf(`{"error":"%v"}`, err))
+	}
+
+	r := &VehicleTypeResponse{
+		ID:    vp.ID.String(),
+		Brand: vp.Brand,
+		Model: vp.Model,
+	}
+
+	resp, err := json.Marshal(r)
+	if err != nil {
+		return c.Status(400).SendString(`{"error": "invalid marshalling"}`)
+	}
+
+	return c.Status(201).JSON(resp)
 }
