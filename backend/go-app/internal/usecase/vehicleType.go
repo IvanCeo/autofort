@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"strings"
 
@@ -12,9 +13,9 @@ import (
 )
 
 type VehicleTypeRepo interface {
-	ListVehicleTypes() ([]*entity.VehicleType, error)
-	AddVehicleType(*entity.VehicleType) error
-	GetVehicleTypeByID(uuid.UUID) (*entity.VehicleType, error)
+	ListVehicleTypes(ctx context.Context) ([]*entity.VehicleType, error)
+	GetVehicleTypeByID(ctx context.Context, u uuid.UUID) (*entity.VehicleType, error)
+	AddVehicleType(ctx context.Context, e *entity.VehicleType) error
 }
 
 var (
@@ -24,7 +25,7 @@ var (
 
 var brandCaser = cases.Title(language.Und)
 
-func (s *Server) AddVehicleType(brand, model string) (uuid.UUID, error) {
+func (s *Server) AddVehicleType(ctx context.Context, brand, model string) (uuid.UUID, error) {
 	brand = strings.TrimSpace(brand)
 	model = strings.TrimSpace(model)
 
@@ -47,17 +48,17 @@ func (s *Server) AddVehicleType(brand, model string) (uuid.UUID, error) {
 		return uuid.Nil, err
 	}
 
-	if err := s.VehicleTypeRepo.AddVehicleType(v); err != nil {
+	if err := s.VehicleTypeRepo.AddVehicleType(ctx, v); err != nil {
 		return uuid.Nil, err
 	}
 
 	return v.ID, nil
 }
 
-func (s *Server) ListVehicleTypes() ([]*entity.VehicleType, error) {
-	return s.VehicleTypeRepo.ListVehicleTypes()
+func (s *Server) ListVehicleTypes(ctx context.Context) ([]*entity.VehicleType, error) {
+	return s.VehicleTypeRepo.ListVehicleTypes(ctx)
 }
 
-func (s *Server) GetVehicleTypeByID(id uuid.UUID) (*entity.VehicleType, error) {
-	return s.VehicleTypeRepo.GetVehicleTypeByID(id)
+func (s *Server) GetVehicleTypeByID(ctx context.Context, id uuid.UUID) (*entity.VehicleType, error) {
+	return s.VehicleTypeRepo.GetVehicleTypeByID(ctx, id)
 }

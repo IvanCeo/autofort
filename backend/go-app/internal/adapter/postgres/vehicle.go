@@ -3,6 +3,7 @@ package postgres
 import (
 	"autofort/internal/entity"
 	e "autofort/internal/errors"
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -11,14 +12,14 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (p *Postgres) AddVehicle(v *entity.Vehicle) error {
+func (p *Postgres) AddVehicle(ctx context.Context, v *entity.Vehicle) error {
 	const q = `
 		INSERT INTO vehicles (id, customer_id, vehicle_type_id, vin, gov_number, mileage)
 		VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
 	_, err := p.pool.Exec(
-		p.ctx,
+		ctx,
 		q,
 		v.ID,
 		v.CustomerId,
@@ -31,7 +32,7 @@ func (p *Postgres) AddVehicle(v *entity.Vehicle) error {
 	return err
 }
 
-func (p *Postgres) ListVehiclesByCustomerIDs(ids []uuid.UUID) ([]*entity.Vehicle, error) {
+func (p *Postgres) ListVehiclesByCustomerIDs(ctx context.Context, ids []uuid.UUID) ([]*entity.Vehicle, error) {
 	if len(ids) == 0 {
 		return []*entity.Vehicle{}, nil
 	}
@@ -57,7 +58,7 @@ func (p *Postgres) ListVehiclesByCustomerIDs(ids []uuid.UUID) ([]*entity.Vehicle
 		ORDER BY created_at DESC
 	`, strings.Join(placeholders, ", "))
 
-	rows, err := p.pool.Query(p.ctx, q, args...)
+	rows, err := p.pool.Query(ctx, q, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,14 +87,14 @@ func (p *Postgres) ListVehiclesByCustomerIDs(ids []uuid.UUID) ([]*entity.Vehicle
 	return items, nil
 }
 
-func (p *Postgres) GetVehicle(id uuid.UUID) (*entity.Vehicle, error) {
+func (p *Postgres) GetVehicle(ctx context.Context, id uuid.UUID) (*entity.Vehicle, error) {
 	const q = `
 		SELECT id, customer_id, vehicle_type_id, vin, gov_number, mileage
 		FROM vehicles
 		WHERE id = $1
 	`
 
-	row := p.pool.QueryRow(p.ctx, q, id)
+	row := p.pool.QueryRow(ctx, q, id)
 
 	v := new(entity.Vehicle)
 	if err := row.Scan(
@@ -113,7 +114,7 @@ func (p *Postgres) GetVehicle(id uuid.UUID) (*entity.Vehicle, error) {
 	return v, nil
 }
 
-func (p *Postgres) UpdateVehicle(v *entity.Vehicle) error {
+func (p *Postgres) UpdateVehicle(ctx context.Context, v *entity.Vehicle) error {
 	const q = `
 		UPDATE vehicles
 		SET vin = $2,
@@ -123,7 +124,7 @@ func (p *Postgres) UpdateVehicle(v *entity.Vehicle) error {
 		WHERE id = $1
 	`
 
-	ct, err := p.pool.Exec(p.ctx, q, v.ID, v.Vin, v.GovNumber, v.Mileage)
+	ct, err := p.pool.Exec(ctx, q, v.ID, v.Vin, v.GovNumber, v.Mileage)
 	if err != nil {
 		return err
 	}

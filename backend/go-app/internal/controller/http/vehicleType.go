@@ -29,7 +29,7 @@ type ListVehicleTypesResponse struct {
 // @Failure      500  {object}  map[string]string  "internal error"
 // @Router       /vehicle-types [get]
 func (h *Handler) GetVehicleTypesHandle(c *fiber.Ctx) error {
-	items, err := h.server.ListVehicleTypes()
+	items, err := h.server.ListVehicleTypes(c.Context())
 	if err != nil {
 		return c.Status(404).SendString(fmt.Sprintf(`{"error":"%v"}`, err))
 	}
@@ -56,7 +56,7 @@ func (h *Handler) GetVehicleTypeByIDHandle(c *fiber.Ctx) error {
 		return c.Status(400).SendString(`{"error": "invalid vehicle id"}`)
 	}
 
-	vp, err := h.server.GetVehicleTypeByID(id)
+	vp, err := h.server.GetVehicleTypeByID(c.Context(), id)
 	if err != nil {
 		return c.Status(500).SendString(fmt.Sprintf(`{"error":"%v"}`, err))
 	}

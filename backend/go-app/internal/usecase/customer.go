@@ -2,13 +2,8 @@ package usecase
 
 import (
 	"autofort/internal/entity"
-	"errors"
 
 	"github.com/google/uuid"
-)
-
-var (
-	ErrCustomerIDRequired = errors.New("customer is required")
 )
 
 type CustomerRepo interface {

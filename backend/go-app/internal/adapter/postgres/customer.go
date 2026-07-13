@@ -2,6 +2,7 @@ package postgres
 
 import (
 	e "autofort/internal/errors"
+	"context"
 	"errors"
 	"strings"
 
@@ -11,22 +12,22 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (p *Postgres) AddCustomer(c *entity.Customer) error {
+func (p *Postgres) AddCustomer(ctx context.Context, c *entity.Customer) error {
 	const q = `
 		INSERT INTO customers (id, first_name, last_name, phone_number)
 		VALUES ($1, $2, $3, $4)
 	`
-	_, err := p.pool.Exec(p.ctx, q, c.ID, c.FirstName, c.LastName, c.PhoneNumber)
+	_, err := p.pool.Exec(ctx, q, c.ID, c.FirstName, c.LastName, c.PhoneNumber)
 	return err
 }
 
-func (p *Postgres) GetCustomer(id uuid.UUID) (*entity.Customer, error) {
+func (p *Postgres) GetCustomer(ctx context.Context, id uuid.UUID) (*entity.Customer, error) {
 	const q = `
 		SELECT id, first_name, last_name, phone_number
 		FROM customers
 		WHERE id = $1
 	`
-	row := p.pool.QueryRow(p.ctx, q, id)
+	row := p.pool.QueryRow(ctx, q, id)
 
 	var c entity.Customer
 	if err := row.Scan(&c.ID, &c.FirstName, &c.LastName, &c.PhoneNumber); err != nil {
@@ -38,7 +39,7 @@ func (p *Postgres) GetCustomer(id uuid.UUID) (*entity.Customer, error) {
 	return &c, nil
 }
 
-func (p *Postgres) UpdateCustomer(c *entity.Customer) error {
+func (p *Postgres) UpdateCustomer(ctx context.Context, c *entity.Customer) error {
 	const q = `
 		UPDATE customers
 		SET first_name = $2,
@@ -47,7 +48,7 @@ func (p *Postgres) UpdateCustomer(c *entity.Customer) error {
 		    updated_at = now()
 		WHERE id = $1
 	`
-	ct, err := p.pool.Exec(p.ctx, q, c.ID, c.FirstName, c.LastName, c.PhoneNumber)
+	ct, err := p.pool.Exec(ctx, q, c.ID, c.FirstName, c.LastName, c.PhoneNumber)
 	if err != nil {
 		return err
 	}
@@ -57,7 +58,7 @@ func (p *Postgres) UpdateCustomer(c *entity.Customer) error {
 	return nil
 }
 
-func (p *Postgres) SearchCustomers(q string, limit, offset int) ([]*entity.Customer, error) {
+func (p *Postgres) SearchCustomers(ctx context.Context, q string, limit, offset int) ([]*entity.Customer, error) {
 	if limit <= 0 {
 		limit = 20
 	}
@@ -76,7 +77,7 @@ func (p *Postgres) SearchCustomers(q string, limit, offset int) ([]*entity.Custo
 		LIMIT $3 OFFSET $4
 	`
 
-	rows, err := p.pool.Query(p.ctx, sql, q, pattern, limit, offset)
+	rows, err := p.pool.Query(ctx, sql, q, pattern, limit, offset)
 	if err != nil {
 		return nil, err
 	}

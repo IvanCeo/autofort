@@ -3,20 +3,21 @@ package postgres
 import (
 	"autofort/internal/entity"
 	e "autofort/internal/errors"
+	"context"
 	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
-func (p *Postgres) ListVehicleTypes() ([]*entity.VehicleType, error) {
+func (p *Postgres) ListVehicleTypes(ctx context.Context) ([]*entity.VehicleType, error) {
 	const q = `
 		SELECT id, brand, model
 		FROM vehicle_types
 		ORDER BY brand ASC, model ASC
 	`
 
-	rows, err := p.pool.Query(p.ctx, q)
+	rows, err := p.pool.Query(ctx, q)
 	if err != nil {
 		return nil, err
 	}
@@ -39,14 +40,14 @@ func (p *Postgres) ListVehicleTypes() ([]*entity.VehicleType, error) {
 	return items, nil
 }
 
-func (p *Postgres) GetVehicleTypeByID(id uuid.UUID) (*entity.VehicleType, error) {
+func (p *Postgres) GetVehicleTypeByID(ctx context.Context, id uuid.UUID) (*entity.VehicleType, error) {
 	const q = `
 		SELECT id, brand, model
 		FROM vehicle_types
 		WHERE id = $1
 	`
 
-	row := p.pool.QueryRow(p.ctx, q, id)
+	row := p.pool.QueryRow(ctx, q, id)
 
 	vt := new(entity.VehicleType)
 	if err := row.Scan(&vt.ID, &vt.Brand, &vt.Model); err != nil {
@@ -59,7 +60,7 @@ func (p *Postgres) GetVehicleTypeByID(id uuid.UUID) (*entity.VehicleType, error)
 	return vt, nil
 }
 
-func (p *Postgres) AddVehicleType(vt *entity.VehicleType) error {
+func (p *Postgres) AddVehicleType(ctx context.Context, vt *entity.VehicleType) error {
 	const q = `
 		INSERT INTO vehicle_types (id, brand, model)
 		VALUES ($1, $2, $3)
@@ -67,6 +68,6 @@ func (p *Postgres) AddVehicleType(vt *entity.VehicleType) error {
 	`
 
 	// используем vt.ID, а не генерим новый
-	_, err := p.pool.Exec(p.ctx, q, vt.ID, vt.Brand, vt.Model)
+	_, err := p.pool.Exec(ctx, q, vt.ID, vt.Brand, vt.Model)
 	return err
 }

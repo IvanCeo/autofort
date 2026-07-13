@@ -63,9 +63,15 @@ func main() {
 
 	workorderClient, err := wordorder.NewWorkOrderClient(ctx, 10*time.Second)
 
-	srv := usecase.NewService(postgres, postgres, postgres, workorderClient)
+	srv, err := usecase.NewService(postgres, postgres, postgres, workorderClient, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	handler := h.NewHandler(srv)
+	handler, err := h.NewHandler(srv)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	router.Route(app, handler)
 

@@ -1,10 +1,12 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"strings"
 
 	"autofort/internal/entity"
+	er "autofort/internal/errors"
 
 	"github.com/google/uuid"
 )
@@ -55,6 +57,7 @@ func (s *Server) EditVehicle(update UpdateVehicleInput) error {
 }
 
 func (s *Server) AddVehicleToCustomer(
+	ctx context.Context,
 	customerID uuid.UUID,
 	vehicleTypeID uuid.UUID,
 	vin string,
@@ -63,7 +66,7 @@ func (s *Server) AddVehicleToCustomer(
 ) (uuid.UUID, error) {
 
 	if customerID == uuid.Nil {
-		return uuid.Nil, ErrCustomerIDRequired
+		return uuid.Nil, er.ErrCustomerIDRequired
 	}
 	if vehicleTypeID == uuid.Nil {
 		return uuid.Nil, ErrVehicleTypeRequired
@@ -85,7 +88,7 @@ func (s *Server) AddVehicleToCustomer(
 		return uuid.Nil, err
 	}
 
-	if _, err := s.VehicleTypeRepo.GetVehicleTypeByID(vehicleTypeID); err != nil {
+	if _, err := s.VehicleTypeRepo.GetVehicleTypeByID(ctx, vehicleTypeID); err != nil {
 		return uuid.Nil, err
 	}
 

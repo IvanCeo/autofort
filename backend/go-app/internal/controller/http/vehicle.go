@@ -103,6 +103,7 @@ func (h *Handler) AddVehicleToCustomerHandle(c *fiber.Ctx) error {
 
 	// 4) call usecase
 	vehicleID, err := h.server.AddVehicleToCustomer(
+		c.Context(),
 		customerID,
 		vtID,
 		req.Vin,

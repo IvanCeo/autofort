@@ -25,7 +25,7 @@ func (h *Handler) DownloadWorkOrderHandle(c *fiber.Ctx) error {
 		return c.Status(400).SendString(`{"error":"invalid vehicle id"}`)
 	}
 
-	pdf, err := h.server.DownloadWorkOrderPDF(vehicleID)
+	pdf, err := h.server.DownloadWorkOrderPDF(c.Context(), vehicleID)
 	if err != nil {
 		// ошибки пока не маппим (404/500), как договаривались
 		return c.Status(500).SendString(fmt.Sprintf(`{"error":"%v"}`, err))

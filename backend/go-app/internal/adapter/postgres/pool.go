@@ -9,10 +9,11 @@ import (
 
 type Postgres struct {
 	pool *pgxpool.Pool
-	ctx  context.Context
 }
 
-func NewPostgres(ctx context.Context, dsn string) (*Postgres, error) {
+func NewPostgres(dsn string) (*Postgres, error) {
+	ctx := context.Background()
+
 	cfg, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func NewPostgres(ctx context.Context, dsn string) (*Postgres, error) {
 		return nil, err
 	}
 
-	return &Postgres{pool: pool, ctx: ctx}, nil
+	return &Postgres{pool: pool}, nil
 }
 
 func (p *Postgres) Close() {

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -52,7 +53,7 @@ type WorkOrderCreateResponse struct {
 	PDF []byte
 }
 
-func (s *Server) DownloadWorkOrderPDF(vehicleID uuid.UUID) ([]byte, error) {
+func (s *Server) DownloadWorkOrderPDF(ctx context.Context, vehicleID uuid.UUID) ([]byte, error) {
 	// 1) vehicle
 	v, err := s.VehicleRepo.GetVehicle(vehicleID)
 	if err != nil {
@@ -66,7 +67,7 @@ func (s *Server) DownloadWorkOrderPDF(vehicleID uuid.UUID) ([]byte, error) {
 	}
 
 	// 3) vehicle type
-	vt, err := s.VehicleTypeRepo.GetVehicleTypeByID(v.VehicleType)
+	vt, err := s.VehicleTypeRepo.GetVehicleTypeByID(ctx, v.VehicleType)
 	if err != nil {
 		return nil, err
 	}
