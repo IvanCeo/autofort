@@ -58,6 +58,7 @@ func (s *Server) SignIn(ctx context.Context, nickname, password string) (*tokens
 	}, nil
 }
 
+// userID при генерации токена необходим будет на этапе валидаци, потом...
 func (s *Server) generateToken(userID, jti string, ttl time.Duration) (string, error) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodES256,
@@ -68,4 +69,31 @@ func (s *Server) generateToken(userID, jti string, ttl time.Duration) (string, e
 		},
 	)
 	return token.SignedString(s.key)
+}
+
+func (s *Server) parseAnsValidate(tokenStr string) (bool, error) {
+	// короче структура для функционала проверки еще и по ID
+	claims := &jwt.RegisteredClaims{}
+	method := jwt.SigningMethodES256
+	token, err := jwt.ParseWithClaims(
+		tokenStr,
+		claims,
+		func(token *jwt.Token) (any, error) {
+			if token.Method.Alg() != method.Alg() {
+				return nil, fmt.Errorf("key signing error: %v", token.Header["alg"])
+			}
+			return &s.key.PublicKey, nil
+		},
+	)
+
+	if err != nil {
+		return false, fmt.Errorf("unxpected error: %w", err)
+	}
+
+	if !token.Valid {
+		return false, jwt.ErrInvalidKey
+	}
+
+	// тут еще потом проверим на id типа claims.ID == expected из аргументов
+	return true, nil
 }
