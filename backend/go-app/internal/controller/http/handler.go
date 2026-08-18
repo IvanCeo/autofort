@@ -12,4 +12,8 @@ func NewHandler(s *usecase.Server) (*Handler, error) {
 	return &Handler{server: s}, nil
 }
 
+func (h *Handler) GetServer() *usecase.Server {
+	return h.server
+}
+
 func (h *Handler) SignUp() error

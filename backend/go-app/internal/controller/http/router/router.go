@@ -12,12 +12,15 @@ import (
 
 func Route(app *fiber.App, handler *http.Handler) {
 	app.Get("/swagger/*", swagger.HandlerDefault)
+
 	api := app.Group("/api")
 	api.Use(auth.New(auth.Config{
 		Authorizer: func(name, pass string) bool {
 			return name == os.Getenv("ADMIN_USER") && pass == os.Getenv("ADMIN_PASS")
 		},
 	}))
+	// при подключении новой mniddleware, откоючить старую сверху
+	// api.Use(middleware.New(handler.GetServer()))
 
 	api.Post("/customers", handler.CreateCustomerHandle)
 	api.Post("/customers/:id/vehicles", handler.AddVehicleToCustomerHandle)

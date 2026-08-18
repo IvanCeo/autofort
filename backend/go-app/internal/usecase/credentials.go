@@ -71,7 +71,7 @@ func (s *Server) generateToken(userID, jti string, ttl time.Duration) (string, e
 	return token.SignedString(s.key)
 }
 
-func (s *Server) parseAnsValidate(tokenStr string) (bool, error) {
+func (s *Server) ParseAndValidate(tokenStr string) error {
 	// короче структура для функционала проверки еще и по ID
 	claims := &jwt.RegisteredClaims{}
 	method := jwt.SigningMethodES256
@@ -87,13 +87,13 @@ func (s *Server) parseAnsValidate(tokenStr string) (bool, error) {
 	)
 
 	if err != nil {
-		return false, fmt.Errorf("unxpected error: %w", err)
+		return fmt.Errorf("unxpected error: %w", err)
 	}
 
 	if !token.Valid {
-		return false, jwt.ErrInvalidKey
+		return jwt.ErrInvalidKey
 	}
 
 	// тут еще потом проверим на id типа claims.ID == expected из аргументов
-	return true, nil
+	return nil
 }
