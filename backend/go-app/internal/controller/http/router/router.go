@@ -12,7 +12,9 @@ import (
 
 func Route(app *fiber.App, handler *http.Handler) {
 	app.Get("/swagger/*", swagger.HandlerDefault)
+	app.Get("/refresh", handler.Refresh)
 
+	// группа api это защищенные эндпоинты
 	api := app.Group("/api")
 	api.Use(auth.New(auth.Config{
 		Authorizer: func(name, pass string) bool {

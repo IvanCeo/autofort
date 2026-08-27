@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -19,7 +20,15 @@ type tokens struct {
 	// for one session only
 	access string
 	// long time creedntials
-	refreash string
+	refresh string
+}
+
+func (t *tokens) GetAccess() string {
+	return t.access
+}
+
+func (t *tokens) GetRefresh() string {
+	return t.refresh
 }
 
 type UserRepo interface {
@@ -53,25 +62,12 @@ func (s *Server) SignIn(ctx context.Context, nickname, password string) (*tokens
 	}
 
 	return &tokens{
-		access:   access,
-		refreash: refresh,
+		access:  access,
+		refresh: refresh,
 	}, nil
 }
 
-// userID при генерации токена необходим будет на этапе валидаци, потом...
-func (s *Server) generateToken(userID, jti string, ttl time.Duration) (string, error) {
-	token := jwt.NewWithClaims(
-		jwt.SigningMethodES256,
-		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ttl)),
-			Subject:   userID,
-			ID:        jti,
-		},
-	)
-	return token.SignedString(s.key)
-}
-
-func (s *Server) ParseAndValidate(tokenStr string) error {
+func (s *Server) parseAndValidate(tokenStr string) error {
 	// короче структура для функционала проверки еще и по ID
 	claims := &jwt.RegisteredClaims{}
 	method := jwt.SigningMethodES256
@@ -96,4 +92,46 @@ func (s *Server) ParseAndValidate(tokenStr string) error {
 
 	// тут еще потом проверим на id типа claims.ID == expected из аргументов
 	return nil
+}
+
+func (s *Server) Refresh(ctx context.Context, userID *uuid.UUID, refreshToken string) (*tokens, error) {
+	if err := s.parseAndValidate(refreshToken); err != nil {
+		return nil, err
+	}
+
+	access, err := s.generateToken(userID.String(), "access", accessTTL)
+	if err != nil {
+		return nil, fmt.Errorf("generate access error: %w", err)
+	}
+
+	refresh, err := s.generateToken(userID.String(), "refresh", refreshTTL)
+	if err != nil {
+		return nil, fmt.Errorf("generate refresh error: %w", err)
+	}
+
+	return &tokens{
+		access:  access,
+		refresh: refresh,
+	}, nil
+}
+
+func (s *Server) AuthCheck(accessToken string) error {
+	if err := s.parseAndValidate(accessToken); err != nil {
+		return fiber.ErrUnauthorized
+	}
+
+	return nil
+}
+
+// userID при генерации токена необходим будет на этапе валидаци, потом...
+func (s *Server) generateToken(userID, jti string, ttl time.Duration) (string, error) {
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodES256,
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ttl)),
+			Subject:   userID,
+			ID:        jti,
+		},
+	)
+	return token.SignedString(s.key)
 }

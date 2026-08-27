@@ -9,7 +9,7 @@ import (
 func New(s *usecase.Server) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		access := c.Get(fiber.HeaderAuthorization)
-		if err := s.ParseAndValidate(access); err != nil {
+		if err := s.AuthCheck(access); err != nil {
 			return c.Redirect("/refresh", fiber.StatusUnauthorized)
 		}
 
