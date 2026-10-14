@@ -33,17 +33,41 @@
     </div>
 
     <div v-if="q && items.length" style="margin-top: 12px;">
+      <div v-if="typesPending" class="muted" style="margin-bottom: 8px;">
+        Загружаем машины...
+      </div>
+      <div v-else-if="typesError" class="muted" style="margin-bottom: 8px;">
+        Vehicle types error: {{ typesError.message }}
+      </div>
+
       <div class="muted" style="margin-bottom: 8px;">
         Результаты: {{ items.length }}
       </div>
 
-      <CustomerCard v-for="c in items" :key="c.id" :customer="c" />
+      <CustomerCard
+        v-for="c in items"
+        :key="c.id"
+        :customer="c"
+        :vehicleTypeById="vehicleTypeById"
+      />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup async>
 const API_BASE = "/api"
+
+const { data: vehicleTypes, pending: typesPending, error: typesError } = await useLazyFetch(
+  `${API_BASE}/vehicle-types`
+)
+
+const vehicleTypeById = computed(() => {
+  const map = {}
+  for (const t of (vehicleTypes.value?.items || [])) {
+    map[t.id] = `${t.brand} ${t.model}`
+  }
+  return map
+})
 
 const q = ref("")
 const items = ref([])
