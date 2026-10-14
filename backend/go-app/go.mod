@@ -1,6 +1,6 @@
 module autofort
 
-go 1.24.2
+go 1.27.1
 
 require (
 	github.com/go-playground/validator/v10 v10.30.1

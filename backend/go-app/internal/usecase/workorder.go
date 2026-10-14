@@ -55,13 +55,13 @@ type WorkOrderCreateResponse struct {
 
 func (s *Server) DownloadWorkOrderPDF(ctx context.Context, vehicleID uuid.UUID) ([]byte, error) {
 	// 1) vehicle
-	v, err := s.VehicleRepo.GetVehicle(vehicleID)
+	v, err := s.VehicleRepo.GetVehicle(ctx, vehicleID)
 	if err != nil {
 		return nil, err
 	}
 
 	// 2) customer
-	c, err := s.CustomerRepo.GetCustomer(v.CustomerId)
+	c, err := s.CustomerRepo.GetCustomer(ctx, v.CustomerId)
 	if err != nil {
 		return nil, err
 	}

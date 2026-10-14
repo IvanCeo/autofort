@@ -2,15 +2,16 @@ package usecase
 
 import (
 	"autofort/internal/entity"
+	"context"
 
 	"github.com/google/uuid"
 )
 
 type CustomerRepo interface {
-	AddCustomer(*entity.Customer) error
-	GetCustomer(id uuid.UUID) (*entity.Customer, error)
-	UpdateCustomer(*entity.Customer) error
-	SearchCustomers(q string, limit, offset int) ([]*entity.Customer, error)
+	AddCustomer(context.Context, *entity.Customer) error
+	GetCustomer(ctx context.Context, id uuid.UUID) (*entity.Customer, error)
+	UpdateCustomer(context.Context, *entity.Customer) error
+	SearchCustomers(ctx context.Context, q string, limit, offset int) ([]*entity.Customer, error)
 }
 
 type CustomerWithVehicles struct {
@@ -29,13 +30,13 @@ type CustomerDetails struct {
 	Vehicles []*entity.Vehicle
 }
 
-func (s *Server) GetCustomerDetails(id uuid.UUID) (*CustomerDetails, error) {
-	c, err := s.CustomerRepo.GetCustomer(id)
+func (s *Server) GetCustomerDetails(ctx context.Context, id uuid.UUID) (*CustomerDetails, error) {
+	c, err := s.CustomerRepo.GetCustomer(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	vehicles, err := s.VehicleRepo.ListVehiclesByCustomerIDs([]uuid.UUID{id})
+	vehicles, err := s.VehicleRepo.ListVehiclesByCustomerIDs(ctx, []uuid.UUID{id})
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +47,7 @@ func (s *Server) GetCustomerDetails(id uuid.UUID) (*CustomerDetails, error) {
 	}, nil
 }
 
-func (s *Server) AddCustomer(f, l, phone string) (uuid.UUID, error) {
+func (s *Server) AddCustomer(ctx context.Context, f, l, phone string) (uuid.UUID, error) {
 	c := &entity.Customer{
 		ID:          uuid.New(),
 		FirstName:   f,
@@ -58,15 +59,15 @@ func (s *Server) AddCustomer(f, l, phone string) (uuid.UUID, error) {
 		return uuid.Nil, err
 	}
 
-	if err := s.CustomerRepo.AddCustomer(c); err != nil {
+	if err := s.CustomerRepo.AddCustomer(ctx, c); err != nil {
 		return uuid.Nil, err
 	}
 
 	return c.ID, nil
 }
 
-func (s *Server) EditCustomer(update UpdateCustomerInput) error {
-	c, err := s.CustomerRepo.GetCustomer(update.ID)
+func (s *Server) EditCustomer(ctx context.Context, update UpdateCustomerInput) error {
+	c, err := s.CustomerRepo.GetCustomer(ctx, update.ID)
 	if err != nil {
 		return err
 	}
@@ -87,20 +88,20 @@ func (s *Server) EditCustomer(update UpdateCustomerInput) error {
 		return err
 	}
 
-	return s.CustomerRepo.UpdateCustomer(c)
+	return s.CustomerRepo.UpdateCustomer(ctx, c)
 }
 
-func (s *Server) GetCustomerByID(ID string) (*entity.Customer, error) {
+func (s *Server) GetCustomerByID(ctx context.Context, ID string) (*entity.Customer, error) {
 	id, err := uuid.Parse(ID)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.CustomerRepo.GetCustomer(id)
+	return s.CustomerRepo.GetCustomer(ctx, id)
 }
 
-func (s *Server) ListCustomers(q string, limit, offset int) ([]CustomerWithVehicles, error) {
-	customers, err := s.CustomerRepo.SearchCustomers(q, limit, offset)
+func (s *Server) ListCustomers(ctx context.Context, q string, limit, offset int) ([]CustomerWithVehicles, error) {
+	customers, err := s.CustomerRepo.SearchCustomers(ctx, q, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +115,7 @@ func (s *Server) ListCustomers(q string, limit, offset int) ([]CustomerWithVehic
 		ids = append(ids, c.ID)
 	}
 
-	vehicles, err := s.VehicleRepo.ListVehiclesByCustomerIDs(ids)
+	vehicles, err := s.VehicleRepo.ListVehiclesByCustomerIDs(ctx, ids)
 	if err != nil {
 		return nil, err
 	}

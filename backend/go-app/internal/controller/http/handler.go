@@ -15,5 +15,3 @@ func NewHandler(s *usecase.Server) (*Handler, error) {
 func (h *Handler) GetServer() *usecase.Server {
 	return h.server
 }
-
-func (h *Handler) SignUp() error

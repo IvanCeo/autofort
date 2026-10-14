@@ -35,7 +35,7 @@ func (h *Handler) Refresh(c *fiber.Ctx) error {
 		HTTPOnly: true,
 	})
 
-	return c.Status(200).SendString() // TODO: идиоматично отправить json
+	return c.Status(200).SendString("") // TODO: идиоматично отправить json
 }
 
 // type Cookie struct {

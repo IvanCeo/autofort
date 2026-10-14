@@ -11,9 +11,7 @@ type Postgres struct {
 	pool *pgxpool.Pool
 }
 
-func NewPostgres(dsn string) (*Postgres, error) {
-	ctx := context.Background()
-
+func NewPostgres(ctx context.Context, dsn string) (*Postgres, error) {
 	cfg, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		return nil, err

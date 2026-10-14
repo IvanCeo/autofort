@@ -78,7 +78,7 @@ func (h *Handler) CreateCustomerHandle(c *fiber.Ctx) error {
 
 	customer := fromDTOtoCustomer(req)
 
-	id, err := h.server.AddCustomer(customer.FirstName, customer.LastName, customer.PhoneNumber)
+	id, err := h.server.AddCustomer(c.Context(), customer.FirstName, customer.LastName, customer.PhoneNumber)
 	if err != nil {
 		return c.Status(400).SendString(fmt.Sprintf(`{"error":"%v"}`, err))
 	}
@@ -121,7 +121,7 @@ func (h *Handler) ListCustomersHandle(c *fiber.Ctx) error {
 		offset = n
 	}
 
-	items, err := h.server.ListCustomers(q, limit, offset)
+	items, err := h.server.ListCustomers(c.Context(), q, limit, offset)
 	if err != nil {
 		return c.Status(500).SendString(fmt.Sprintf(`{"error":"%v"}`, err))
 	}
@@ -177,7 +177,7 @@ func (h *Handler) GetCustomerHandle(c *fiber.Ctx) error {
 		return c.Status(400).SendString(`{"error":"invalid customer id"}`)
 	}
 
-	d, err := h.server.GetCustomerDetails(id)
+	d, err := h.server.GetCustomerDetails(c.Context(), id)
 	if err != nil {
 		// ошибки пока не маппим (как ты просил), просто отдадим 400/500 потом улучшим
 		return c.Status(500).SendString(fmt.Sprintf(`{"error":"%v"}`, err))
@@ -243,7 +243,7 @@ func (h *Handler) PatchCustomerHandle(c *fiber.Ctx) error {
 		PhoneNumber: req.PhoneNumber,
 	}
 
-	if err := h.server.EditCustomer(update); err != nil {
+	if err := h.server.EditCustomer(c.Context(), update); err != nil {
 		// ошибки нормально разрулим позже
 		return c.Status(500).SendString(fmt.Sprintf(`{"error":"%v"}`, err))
 	}

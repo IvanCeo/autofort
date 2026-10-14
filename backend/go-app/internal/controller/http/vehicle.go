@@ -59,7 +59,7 @@ func (h *Handler) PatchVehicleHandle(c *fiber.Ctx) error {
 		Mileage:   req.Mileage,
 	}
 
-	if err := h.server.EditVehicle(update); err != nil {
+	if err := h.server.EditVehicle(c.Context(), update); err != nil {
 		return c.Status(500).SendString(fmt.Sprintf(`{"error":"%v"}`, err))
 	}
 

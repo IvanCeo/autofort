@@ -17,11 +17,11 @@ var (
 )
 
 type VehicleRepo interface {
-	AddVehicle(*entity.Vehicle) error
-	ListVehiclesByCustomerIDs(ids []uuid.UUID) ([]*entity.Vehicle, error)
+	AddVehicle(context.Context, *entity.Vehicle) error
+	ListVehiclesByCustomerIDs(ctx context.Context, ids []uuid.UUID) ([]*entity.Vehicle, error)
 
-	GetVehicle(id uuid.UUID) (*entity.Vehicle, error)
-	UpdateVehicle(*entity.Vehicle) error
+	GetVehicle(ctx context.Context, id uuid.UUID) (*entity.Vehicle, error)
+	UpdateVehicle(context.Context, *entity.Vehicle) error
 }
 
 type UpdateVehicleInput struct {
@@ -31,8 +31,8 @@ type UpdateVehicleInput struct {
 	Mileage   *int
 }
 
-func (s *Server) EditVehicle(update UpdateVehicleInput) error {
-	v, err := s.VehicleRepo.GetVehicle(update.ID)
+func (s *Server) EditVehicle(ctx context.Context, update UpdateVehicleInput) error {
+	v, err := s.VehicleRepo.GetVehicle(ctx, update.ID)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (s *Server) EditVehicle(update UpdateVehicleInput) error {
 		return err
 	}
 
-	return s.VehicleRepo.UpdateVehicle(v)
+	return s.VehicleRepo.UpdateVehicle(ctx, v)
 }
 
 func (s *Server) AddVehicleToCustomer(
@@ -84,7 +84,7 @@ func (s *Server) AddVehicleToCustomer(
 		finalMileage = *mileage
 	}
 
-	if _, err := s.CustomerRepo.GetCustomer(customerID); err != nil {
+	if _, err := s.CustomerRepo.GetCustomer(ctx, customerID); err != nil {
 		return uuid.Nil, err
 	}
 
@@ -105,7 +105,7 @@ func (s *Server) AddVehicleToCustomer(
 		return uuid.Nil, err
 	}
 
-	if err := s.VehicleRepo.AddVehicle(v); err != nil {
+	if err := s.VehicleRepo.AddVehicle(ctx, v); err != nil {
 		return uuid.Nil, err
 	}
 
